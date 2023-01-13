@@ -137,6 +137,19 @@ app.get("/messages", async(req, res) => {
 
 })
 
+app.post("/status", async(req, res) => {
+  const user = req.headers.user
+  try {
+    const existsUser = await db.collection("participants").find({name:user}).toArray()
+    if(!existsUser) return res.sendStatus(404)
+    await db.collection("participants").updateOne({name:user}, {$set: {lastStatus: Date.now()}})
+    return res.statusCode(200)
+
+  } catch (error) {
+    return res.statusCode(404)
+  }
+})
+
 
 app.listen(port, () => {
   console.log("Server on in port ", port)
