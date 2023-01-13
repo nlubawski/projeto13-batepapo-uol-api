@@ -112,7 +112,7 @@ app.post("/messages", async (req, res) => {
 app.get("/messages", async (req, res) => {
   let { limit } = req.query
   if (limit) {
-    if (limit <= 0) {
+    if (limit <= 0 || isNaN(limit)) {
       return res.sendStatus(422)
     }
   }
@@ -122,7 +122,7 @@ app.get("/messages", async (req, res) => {
       $or: [{ from: user }, { to: user }, { to: 'Todos' }]
     }).toArray()
 
-    if(!limit) return res.send(messages.reverse())
+    if (!limit) return res.send(messages.reverse())
     res.send(messages.slice(-limit).reverse())
 
   } catch (error) {
@@ -145,13 +145,13 @@ app.post("/status", async (req, res) => {
 })
 
 checkStatus()
-function checkStatus(){
-  setInterval(async() => {
-    try{
+function checkStatus() {
+  setInterval(async () => {
+    try {
       const participants = await db.collection("participants").find().toArray()
 
       participants.forEach(async (participant) => {
-        if(participant.lastStatus >= 10000){
+        if (participant.lastStatus >= 10000) {
           await db.collection("participants").deleteOne({ _id: ObjectId(participant._id) })
 
           await db.collection("messages").insertOne({
@@ -162,8 +162,8 @@ function checkStatus(){
             time: dayjs(Date.now()).format('HH:mm:ss')
           })
         }
-      })    
-    }catch(error){
+      })
+    } catch (error) {
       res.sendStatus(500)
     }
   }, 15000)
