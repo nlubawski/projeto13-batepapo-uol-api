@@ -1,7 +1,7 @@
 import express, { json } from 'express'
 import dotenv from 'dotenv'
 import cors from 'cors'
-import { MongoClient } from 'mongodb'
+import { MongoClient, ObjectId } from 'mongodb'
 import dayjs from 'dayjs'
 import joi from "joi";
 
@@ -144,7 +144,33 @@ app.post("/status", async (req, res) => {
   }
 })
 
+checkStatus()
+function checkStatus(){
+  setInterval(async() => {
+    try{
+      const participants = await db.collection("participants").find().toArray()
+
+      participants.forEach(async (participant) => {
+        if(participant.lastStatus >= 10000){
+          await db.collection("participants").deleteOne({ _id: ObjectId(participant._id) })
+
+          await db.collection("messages").insertOne({
+            from: participant.name,
+            to: 'Todos',
+            text: 'sai da sala...',
+            type: 'status',
+            time: dayjs(Date.now()).format('HH:mm:ss')
+          })
+        }
+      })    
+    }catch(error){
+      res.sendStatus(500)
+    }
+  }, 15000)
+}
+
 
 app.listen(port, () => {
   console.log("Server on in port ", port)
 })
+
