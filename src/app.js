@@ -1,4 +1,4 @@
-import express from 'express'
+import express, {json} from 'express'
 import dotenv from 'dotenv'
 import cors from 'cors'
 import { MongoClient } from 'mongodb'
@@ -84,7 +84,7 @@ app.get("/participants", async (req, res) => {
 
 app.post("/messages", async (req, res) => {
   const { body } = req;
-  const userFrom = req.headers("User")
+  const userFrom = req.headers.user
   const message = {
     from: userFrom,
     to: body.to,
