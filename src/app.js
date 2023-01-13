@@ -90,7 +90,7 @@ app.post("/messages", async (req, res) => {
     to: body.to,
     text: body.text,
     type: body.type,
-    time: dayjs().format("HH::mm:ss")
+    time: dayjs().format("HH:mm:ss")
   }
 
   try {
