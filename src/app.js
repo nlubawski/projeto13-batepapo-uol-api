@@ -74,13 +74,41 @@ app.post("/participants", async (req, res) => {
 });
 
 app.get("/participants", async (req, res) => {
-    try {
-        const participants = await db.collection("participants").find({}).toArray();
-        return res.send(participants);
-    } catch (error) {
-        res.sendStatus(422);
-    }
+  try {
+    const participants = await db.collection("participants").find({}).toArray();
+    return res.send(participants);
+  } catch (error) {
+    res.sendStatus(422);
+  }
 });
+
+app.post("/messages", async (req, res) => {
+  const { body } = req;
+  const userFrom = req.headers("User")
+  const message = {
+    from: userFrom,
+    to: body.to,
+    text: body.text,
+    type: body.type,
+    time: dayjs().format("HH::mm:ss")
+  }
+
+  try {
+    await messageSchema.validateAsync(message, { abortEarly: false })
+  } catch (error) {
+    return res.sendStatus(422)
+  }
+
+  try {
+    const participants = await db.collection("participants").findOne({name:userFrom})
+    if(!participants) return res.sendStatus(422)
+    await db.collection("messages").insertOne(message)
+    return res.sendStatus(201)
+  } catch (error) {
+    return res.sendStatus(422)
+  }
+})
+
 
 app.listen(port, () => {
   console.log("Server on in port ", port)
