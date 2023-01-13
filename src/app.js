@@ -1,4 +1,4 @@
-import express, {json} from 'express'
+import express, { json } from 'express'
 import dotenv from 'dotenv'
 import cors from 'cors'
 import { MongoClient } from 'mongodb'
@@ -100,8 +100,8 @@ app.post("/messages", async (req, res) => {
   }
 
   try {
-    const participants = await db.collection("participants").findOne({name:userFrom})
-    if(!participants) return res.sendStatus(422)
+    const participants = await db.collection("participants").findOne({ name: userFrom })
+    if (!participants) return res.sendStatus(422)
     await db.collection("messages").insertOne(message)
     return res.sendStatus(201)
   } catch (error) {
@@ -109,24 +109,27 @@ app.post("/messages", async (req, res) => {
   }
 })
 
-app.get("/messages", async(req, res) => {
-  let {limit} = req.query
-  if(limit <= 0 || typeof limit*1 !== 'number') return res.sendStatus(422)
+app.get("/messages", async (req, res) => {
+  let { limit } = req.query
+  if (limit) {
+    if (limit <= 0) {
+      return res.sendStatus(422)
+    }
+  }
   const user = req.headers.user
-  if(!limit) limit = 100
   try {
     const messages = await db.collection("messages").find({
-      $or: [{from:user}, {to:user}, {to:'Todos'}]}).toArray()
+      $or: [{ from: user }, { to: user }, { to: 'Todos' }]
+    }).toArray()
 
     const reverseMessages = messages.reverse()
     const limitedMessages = []
-
-    for(let i=0; i<reverseMessages.length; i++){
-      if(i < limit){
-        console.log("limite", limit)
+    if(!limit) limit = messages.length;
+    for (let i = 0; i < limit; i++) {
+      if (i < limit) {
         limitedMessages.push(reverseMessages[i])
       }
-      else{
+      else {
         break
       }
 
@@ -139,12 +142,12 @@ app.get("/messages", async(req, res) => {
 
 })
 
-app.post("/status", async(req, res) => {
+app.post("/status", async (req, res) => {
   const user = req.headers.user
   try {
-    const existsUser = await db.collection("participants").find({name:user}).toArray()
-    if(!existsUser) return res.sendStatus(404)
-    await db.collection("participants").updateOne({name:user}, {$set: {lastStatus: Date.now()}})
+    const existsUser = await db.collection("participants").find({ name: user }).toArray()
+    if (!existsUser) return res.sendStatus(404)
+    await db.collection("participants").updateOne({ name: user }, { $set: { lastStatus: Date.now() } })
     return res.statusCode(200)
 
   } catch (error) {
