@@ -109,6 +109,34 @@ app.post("/messages", async (req, res) => {
   }
 })
 
+app.get("/messages", async(req, res) => {
+  let {limit} = req.query
+  const user = req.headers.user
+  if(!limit) limit = 100
+  try {
+    const messages = await db.collection("messages").find({
+      $or: [{from:user}, {to:user}, {to:'Todos'}]}).toArray()
+
+    const reverseMessages = messages.reverse()
+    const limitedMessages = []
+
+    for(let i=0; i<reverseMessages.length; i++){
+      if(i < limit){
+        limitedMessages.push(reverseMessages[i])
+      }
+      else{
+        break
+      }
+
+      return res.send(limitedMessages.reverse())
+    }
+
+  } catch (error) {
+    return res.sendStatus(422)
+  }
+
+})
+
 
 app.listen(port, () => {
   console.log("Server on in port ", port)
