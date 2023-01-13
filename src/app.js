@@ -111,6 +111,7 @@ app.post("/messages", async (req, res) => {
 
 app.get("/messages", async(req, res) => {
   let {limit} = req.query
+  if(limit <= 0 || typeof limit*1 !== 'number') return res.sendStatus(422)
   const user = req.headers.user
   if(!limit) limit = 100
   try {
@@ -122,6 +123,7 @@ app.get("/messages", async(req, res) => {
 
     for(let i=0; i<reverseMessages.length; i++){
       if(i < limit){
+        console.log("limite", limit)
         limitedMessages.push(reverseMessages[i])
       }
       else{
