@@ -132,15 +132,17 @@ app.get("/messages", async (req, res) => {
 })
 
 app.post("/status", async (req, res) => {
-  const user = req.headers.user
+  const {user} = req.headers
   try {
-    const existsUser = await db.collection("participants").find({ name: user }).toArray()
+    console.log("user",user)
+    const existsUser = await db.collection("participants").findOne({ name: user })
+    console.log("exi", existsUser)
     if (!existsUser) return res.sendStatus(404)
     await db.collection("participants").updateOne({ name: user }, { $set: { lastStatus: Date.now() } })
-    return res.statusCode(200)
+    return res.sendStatus(200)
 
   } catch (error) {
-    return res.statusCode(500)
+    return res.sendStatus(500)
   }
 })
 
