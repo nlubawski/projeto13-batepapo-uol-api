@@ -123,18 +123,8 @@ app.get("/messages", async (req, res) => {
     }).toArray()
 
     const reverseMessages = messages.reverse()
-    const limitedMessages = []
-    if(!limit) limit = messages.length;
-    for (let i = 0; i < limit; i++) {
-      if (i < limit) {
-        limitedMessages.push(reverseMessages[i])
-      }
-      else {
-        break
-      }
-
-      return res.send(limitedMessages.reverse())
-    }
+    if(!limit) return res.send(reverseMessages)
+    res.send(reverseMessages.slice(-limit))
 
   } catch (error) {
     return res.sendStatus(422)
