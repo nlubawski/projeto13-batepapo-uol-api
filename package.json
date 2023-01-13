@@ -1,4 +1,24 @@
 {
+  "name": "projeto13-batepapo-uol-api",
+  "version": "1.0.0",
+  "main": "index.js",
+  "type": "module",
+  "devDependencies": {},
+  "scripts": {
+    "start": "node ./src/app.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/nlubawski/projeto13-batepapo-uol-api.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/nlubawski/projeto13-batepapo-uol-api/issues"
+  },
+  "homepage": "https://github.com/nlubawski/projeto13-batepapo-uol-api#readme",
+  "description": "",
   "dependencies": {
     "cors": "^2.8.5",
     "dotenv": "^16.0.3",
