@@ -122,9 +122,8 @@ app.get("/messages", async (req, res) => {
       $or: [{ from: user }, { to: user }, { to: 'Todos' }]
     }).toArray()
 
-    const reverseMessages = messages.reverse()
-    if(!limit) return res.send(reverseMessages)
-    res.send(reverseMessages.slice(-limit))
+    if(!limit) return res.send(messages.reverse())
+    res.send(messages.slice(-limit).reverse())
 
   } catch (error) {
     return res.sendStatus(422)
