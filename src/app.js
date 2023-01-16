@@ -132,11 +132,11 @@ app.get("/messages", async (req, res) => {
 })
 
 app.post("/status", async (req, res) => {
-  const {user} = req.headers
   try {
+    const { user } = req.headers
     const existsUser = await db.collection("participants").findOne({ name: user })
     if (!existsUser) return res.sendStatus(404)
-    await db.collection("participants").updateOne({ name: user }, { $set: { lastStatus: Date.now()}})
+    await db.collection("participants").updateOne({ name: user }, { $set: { lastStatus: Date.now() } })
     return res.sendStatus(200)
   } catch (error) {
     return res.sendStatus(500)
@@ -148,11 +148,9 @@ function checkStatus() {
   setInterval(async () => {
     try {
       const participants = await db.collection("participants").find().toArray()
-
       participants.forEach(async (participant) => {
-        if (participant.lastStatus >= 10000) {
+        if (Date.now() - participant.lastStatus >= 10000) {
           await db.collection("participants").deleteOne({ _id: ObjectId(participant._id) })
-
           await db.collection("messages").insertOne({
             from: participant.name,
             to: 'Todos',
@@ -168,8 +166,6 @@ function checkStatus() {
   }, 15000)
 }
 
-
 app.listen(port, () => {
   console.log("Server on in port ", port)
 })
-
